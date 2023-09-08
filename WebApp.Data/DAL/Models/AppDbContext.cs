@@ -9,6 +9,6 @@ namespace WebApplication1.DAL.Models
             : base(options)
         {
         }
-        public DbSet<User> Users { get; set; } = null!;
+        public virtual DbSet<User> Users { get; set; } = null!;
     }
 }
