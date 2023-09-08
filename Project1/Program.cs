@@ -7,10 +7,11 @@ using WebApplication1.ServiceInterfaces;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
 builder.Services.AddControllersWithViews();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IURLService, URLsService>();
+builder.Services.AddScoped<IURLRepository, URLRepository>();
 builder.Services.AddDbContext<AppDbContext>(options =>
                 options.UseSqlServer(@"Server=DESKTOP-L4JH3JT\SQLEXPRESS;Database=urldb;Trusted_Connection=True;TrustServerCertificate=True"));
 builder.Services.AddEndpointsApiExplorer();
