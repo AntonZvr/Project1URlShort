@@ -12,6 +12,7 @@ namespace WebApp.Data.DAL.RepositoryInterfaces
         IQueryable<URLModel> GetURLs();
         URLModel GetURLById(int Id);
         void InsertNewURL(URLModel UrlModel);
+        URLModel GetURLByShortUrl(string shortUrl);
         void Save();
     }
 }

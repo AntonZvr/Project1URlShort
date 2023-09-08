@@ -45,5 +45,27 @@ namespace Project1.Controllers
 
             return CreatedAtAction(nameof(GetById), new { id = newUrlVM.Id }, newUrlVM);
         }
+
+        [HttpPost("shorten")]
+        public IActionResult ShortenUrl([FromBody] string fullUrl)
+        {
+            if (string.IsNullOrWhiteSpace(fullUrl)) return BadRequest("URL is required");
+
+            var shortened = _urlService.ShortenUrl(fullUrl);
+
+            return string.IsNullOrEmpty(shortened) ? Problem("Unable to shorten the URL") : Ok(shortened);
+        }
+
+        [HttpGet("{shortUrl}")]
+        public IActionResult RedirectShortUrl(string shortUrl)
+        {
+            if (string.IsNullOrWhiteSpace(shortUrl)) return BadRequest("Short URL is required");
+
+            var fullUrl = _urlService.ExpandUrl(shortUrl);
+
+            if (string.IsNullOrEmpty(fullUrl)) return NotFound();
+
+            return Redirect(fullUrl);
+        }
     }
 }

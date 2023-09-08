@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -33,6 +34,11 @@ namespace WebApp.Data.DAL.Repositories
             _context.URLTable.Add(UrlModel);
         }
 
+        public URLModel GetURLByShortUrl(string shortUrl)
+        {
+            return _context.URLTable.FirstOrDefault(u => u.ShortUrl == shortUrl);
+        }
+        
         public void Save()
         {
             _context.SaveChanges();

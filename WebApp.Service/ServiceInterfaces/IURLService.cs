@@ -13,5 +13,7 @@ namespace WebApplication1.ServiceInterfaces
         IEnumerable<URLModel> GetURLs();
         URLModel GetURLById(int id);
         void InsertNewURL(URLViewModel UrlVM);
+        string ShortenUrl(string longUrl, int length = 7);
+        string ExpandUrl(string shortUrl);
     }
 }
