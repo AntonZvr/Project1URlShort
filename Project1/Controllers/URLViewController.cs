@@ -33,25 +33,25 @@ namespace Project1.Controllers
             return Ok(urlById);
         }
 
-        [HttpPost("addNewUrl")]
-        public IActionResult Post([FromBody] URLViewModel newUrlVM)
+        //[HttpPost("addNewUrl")]
+        //public IActionResult Post([FromBody] URLViewModel newUrlVM)
+        //{
+        //    if (!ModelState.IsValid)
+        //    {
+        //        return BadRequest(ModelState);
+        //    }
+
+        //    _urlService.InsertNewURL(newUrlVM);
+
+        //    return CreatedAtAction(nameof(GetById), new { id = newUrlVM.Id }, newUrlVM);
+        //}
+
+        [HttpPost("insertShortenedUrl")]
+        public IActionResult ShortenUrl([FromBody] URLViewModel model)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+            if (string.IsNullOrWhiteSpace(model.FullUrl)) return BadRequest("URL is required");
 
-            _urlService.InsertNewURL(newUrlVM);
-
-            return CreatedAtAction(nameof(GetById), new { id = newUrlVM.Id }, newUrlVM);
-        }
-
-        [HttpPost("shorten")]
-        public IActionResult ShortenUrl([FromBody] string fullUrl)
-        {
-            if (string.IsNullOrWhiteSpace(fullUrl)) return BadRequest("URL is required");
-
-            var shortened = _urlService.ShortenUrl(fullUrl);
+            var shortened = _urlService.ShortenUrl(model.FullUrl);
 
             return string.IsNullOrEmpty(shortened) ? Problem("Unable to shorten the URL") : Ok(shortened);
         }

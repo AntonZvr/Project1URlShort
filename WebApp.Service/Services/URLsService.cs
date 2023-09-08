@@ -55,11 +55,15 @@ public class URLsService : IURLService
         if (string.IsNullOrWhiteSpace(token)) return null;
 
         var shortUrl = new URLModel { FullUrl = longUrl, ShortUrl = token };
-
-        _urlRepository.InsertNewURL(shortUrl);
-        _urlRepository.Save();
+        InsertShortenUrl(shortUrl);
 
         return $"https://localhost:44490/URLView/{token}";
+    }
+
+    private void InsertShortenUrl(URLModel shortUrl)
+    {
+        _urlRepository.InsertNewURL(shortUrl);
+        _urlRepository.Save();
     }
 
     public string ExpandUrl(string shortUrl)
