@@ -58,7 +58,6 @@ export function Home() {
                 <tbody>
                     {data.map(item => (
                         <tr key={item.id}>
-                            <td>{item.id}</td>
                             <td>{item.fullUrl}</td>
                             <td>https://localhost:44490/URLView/{item.shortUrl}</td>
                         </tr>
