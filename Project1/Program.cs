@@ -1,4 +1,6 @@
 using Microsoft.EntityFrameworkCore;
+using WebApp.Data.DAL.Repositories;
+using WebApp.Data.DAL.RepositoryInterfaces;
 using WebApplication1.DAL.Models;
 using WebApplication1.ServiceInterfaces;
 
@@ -8,6 +10,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddDbContext<AppDbContext>(options =>
                 options.UseSqlServer(@"Server=DESKTOP-L4JH3JT\SQLEXPRESS;Database=urldb;Trusted_Connection=True;TrustServerCertificate=True"));
 builder.Services.AddEndpointsApiExplorer();

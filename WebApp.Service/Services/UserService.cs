@@ -1,13 +1,16 @@
-﻿using WebApplication1.DAL.Models;
+﻿using WebApp.Data.DAL.Repositories;
+using WebApp.Data.DAL.RepositoryInterfaces;
+using WebApplication1.DAL.Models;
 using WebApplication1.ServiceInterfaces;
+using WebApplication1.ViewModels;
 
 public class UserService : IUserService
 {
-    private AppDbContext _context;
+    private readonly IUserRepository _userRepository;
 
-    public UserService(AppDbContext context)
+    public UserService(IUserRepository userRepository)
     {
-        _context = context;
+        _userRepository = userRepository;
     }
 
     public User Authenticate(string username, string password)
@@ -15,28 +18,34 @@ public class UserService : IUserService
         if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
             return null;
 
-        var user = _context.Users.SingleOrDefault(x => x.Username == username && x.Password == password);
+        var user = _userRepository.GetUserByUsernameAndPassword(username, password);
 
-        // Check if username exists and password is correct
         if (user == null)
             return null;
 
-        // Authentication successful
         return user;
     }
 
-    public User Register(User user)
+    public User Register(RegisterViewModel model)
     {
-        // Validation
 
-        if (string.IsNullOrWhiteSpace(user.Password))
+        if (string.IsNullOrWhiteSpace(model.Password))
             throw new Exception("Password is required");
 
-        if (_context.Users.Any(x => x.Username == user.Username))
-            throw new Exception("Username \"" + user.Username + "\" is already taken");
+        if (_userRepository.IsUsernameTaken(model.Username))
+            throw new Exception("Username \"" + model.Username + "\" is already taken");
 
-        _context.Users.Add(user);
-        _context.SaveChanges();
+        var user = new User
+        {
+            FirstName = model.FirstName,
+            LastName = model.LastName,
+            Username = model.Username,
+            Password = model.Password,
+            Role = model.Role
+        };
+
+        _userRepository.AddUser(user);
+        _userRepository.Save();
 
         return user;
     }

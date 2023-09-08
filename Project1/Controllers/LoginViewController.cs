@@ -19,7 +19,7 @@ namespace WebApplication1.Controllers
             _userService = userService;
         }
 
-        // POST: api/users/authenticate
+        // POST
         [HttpPost("authenticate")]
         public IActionResult Authenticate([FromBody] LoginViewModel model)
         {
@@ -32,22 +32,13 @@ namespace WebApplication1.Controllers
             return Ok(new { Id = user.Id, FirstName = user.FirstName, LastName = user.LastName, Username = user.Username });
         }
 
-        // POST: api/users/register
+        // POST
         [HttpPost("register")]
-        public IActionResult Register([FromBody] RegisterRequest model)
+        public IActionResult Register([FromBody] RegisterViewModel model)
         {
             try
             {
-                // Create User
-                var user = new User
-                {
-                    FirstName = model.FirstName,
-                    LastName = model.LastName,
-                    Username = model.Username,
-                    Password = model.Password,
-                    Role = model.Role
-                };
-                var createdUser = _userService.Register(user);
+                var createdUser = _userService.Register(model);
 
                 return Ok(new { Id = createdUser.Id, FirstName = createdUser.FirstName, LastName = createdUser.LastName, Username = createdUser.Username, Role = createdUser.Role });
             }
@@ -57,7 +48,5 @@ namespace WebApplication1.Controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
-
     }
-
 }

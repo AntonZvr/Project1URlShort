@@ -2,7 +2,7 @@
 
 namespace WebApplication1.ViewModels
 {
-    public class RegisterRequest
+    public class RegisterViewModel
     {
         [Required]
         public string FirstName { get; set; }
