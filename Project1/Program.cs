@@ -10,8 +10,12 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddDbContext<AppDbContext>(options =>
                 options.UseSqlServer(@"Server=DESKTOP-L4JH3JT\SQLEXPRESS;Database=urldb;Trusted_Connection=True;TrustServerCertificate=True"));
-var app = builder.Build();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
+var app = builder.Build();
+app.UseSwagger();
+app.UseSwaggerUI();
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {

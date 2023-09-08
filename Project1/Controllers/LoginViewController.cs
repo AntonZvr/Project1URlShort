@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Project1.ViewModels;
 using WebApplication1.DAL.Models;
 using WebApplication1.ServiceInterfaces;
 using WebApplication1.ViewModels;
@@ -20,9 +21,10 @@ namespace WebApplication1.Controllers
 
         // POST: api/users/authenticate
         [HttpPost("authenticate")]
-        public IActionResult Authenticate([FromBody] RegisterRequest model)
+        public IActionResult Authenticate([FromBody] LoginViewModel model)
         {
-            var user = _userService.Authenticate(model.Username, model.Password);
+   
+            var user = _userService.Authenticate(model.LoginUsername, model.LoginPassword);
 
             if (user == null)
                 return BadRequest(new { message = "Username or password is incorrect" });
