@@ -1,14 +1,36 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
 
-export class Home extends Component {
-  static displayName = Home.name;
+export function Home() {
+    const [data, setData] = useState([]);
 
-  render() {
+    useEffect(() => {
+        fetch('https://localhost:44490/URLView/getAllURLs')
+            .then(response => response.json())
+            .then(data => setData(data));
+    }, []);
+
     return (
-      <div>
-        <h1>URL SHORTENER HOME PAGE!</h1>
-        
-      </div>
+        <div>
+            <h1>Data Table</h1>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Full URL</th>
+                        <th>Short URL</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {data.map(item => (
+                        <tr key={item.id}>
+                            <td>{item.id}</td>
+                            <td>{item.fullUrl}</td>
+                            <td>{item.shortUrl}</td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+        </div>
     );
-  }
 }
+
