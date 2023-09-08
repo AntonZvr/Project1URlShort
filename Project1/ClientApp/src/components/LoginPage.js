@@ -22,7 +22,9 @@ export function LoginPage() {
         const data = await response.json();
         if (response.ok) {
             console.log("success log")
-            setErrorMessage("")
+            setErrorMessage("");
+            setLoginUsername("");
+            setLoginPassword("");
         } else {
             console.log("error log")
             setErrorMessage("Username or password is incorrect");
@@ -39,6 +41,12 @@ export function LoginPage() {
         const data = await response.json();
         if (response.ok) {
             console.log("success reg")
+            setErrorRegMessage("");
+            setFirstName("");
+            setLastName("");
+            setUsername("");
+            setPassword("");
+            setRole("");
             setErrorRegMessage("")
         } else {
             console.log("error reg")
