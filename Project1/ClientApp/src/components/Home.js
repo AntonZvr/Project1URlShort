@@ -3,6 +3,8 @@ import React, { useState, useEffect } from 'react';
 export function Home() {
     const [data, setData] = useState([]);
     const [url, setUrl] = useState('');
+    const [isValidUrl, setIsValidUrl] = useState(true);
+    const [showDuplicateMessage, setShowDuplicateMessage] = useState(false);
 
     useEffect(() => {
         getAllURLs();
@@ -15,33 +17,51 @@ export function Home() {
             .catch(error => console.error(error));
     };
 
-    const addNewURL = () => {
-        if (url.trim() !== '') {
-            const newUrl = {
-                id: 0,
-                fullUrl: url,
-                shortUrl: ''
-            };
-
-            fetch('https://localhost:44490/URLView/insertShortenedUrl', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(newUrl)
-            })
-                .then(response => response.json())
-                .then(() => {
-                    getAllURLs(); // Fetch the updated data after successful insertion
-                })
-                .catch(error => console.error(error));
-
-            setUrl(''); // Clear the input field after adding the new URL
-        }
-    };
-
     const handleInputChange = (event) => {
         setUrl(event.target.value);
+        setIsValidUrl(validateUrl(event.target.value));
+    };
+
+    const validateUrl = (value) => {
+        const urlPattern = /^(https?:\/\/)?([\w-]+\.)+[\w-]+(\/[\w-./?%&=]*)?$/;
+        return urlPattern.test(value);
+    };
+
+    const addNewURL = async () => {
+        if (url.trim() !== '') {
+            if (isValidUrl) {
+                const newUrl = {
+                    id: 0,
+                    fullUrl: url,
+                    shortUrl: ''
+                };
+
+                try {
+                    const response = await fetch('https://localhost:44490/URLView/insertShortenedUrl', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(newUrl)
+                    });
+
+                    if (response.ok) {
+                        const isDuplicate = data.some(item => item.fullUrl === url);
+                        if (!isDuplicate) {
+                            await getAllURLs();
+                            setUrl('');
+                            setShowDuplicateMessage(false);
+                        } else {
+                            setShowDuplicateMessage(true);
+                        }
+                    } else {
+                        console.error('Failed to add URL');
+                    }
+                } catch (error) {
+                    console.error(error);
+                }
+            }
+        }
     };
 
     return (
@@ -50,7 +70,6 @@ export function Home() {
             <table>
                 <thead>
                     <tr>
-                        <th>ID</th>
                         <th>Full URL</th>
                         <th>Short URL</th>
                     </tr>
@@ -71,10 +90,9 @@ export function Home() {
                 value={url}
                 onChange={handleInputChange}
             />
-            <button onClick={() => {
-                addNewURL();
-                getAllURLs(); // Fetch the updated data on each button click
-            }}>Add</button>
+            {!isValidUrl && <p>Please enter a valid URL</p>}
+            {showDuplicateMessage && <p>This URL already exists in the table</p>}
+            <button onClick={addNewURL}>Add</button>
         </div>
     );
 }

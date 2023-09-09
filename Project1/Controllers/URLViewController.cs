@@ -33,19 +33,6 @@ namespace Project1.Controllers
             return Ok(urlById);
         }
 
-        //[HttpPost("addNewUrl")]
-        //public IActionResult Post([FromBody] URLViewModel newUrlVM)
-        //{
-        //    if (!ModelState.IsValid)
-        //    {
-        //        return BadRequest(ModelState);
-        //    }
-
-        //    _urlService.InsertNewURL(newUrlVM);
-
-        //    return CreatedAtAction(nameof(GetById), new { id = newUrlVM.Id }, newUrlVM);
-        //}
-
         [HttpPost("insertShortenedUrl")]
         public IActionResult ShortenUrl([FromBody] URLViewModel model)
         {
