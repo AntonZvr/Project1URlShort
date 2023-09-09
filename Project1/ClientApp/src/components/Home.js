@@ -1,26 +1,98 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
 
-export class Home extends Component {
-  static displayName = Home.name;
+export function Home() {
+    const [data, setData] = useState([]);
+    const [url, setUrl] = useState('');
+    const [isValidUrl, setIsValidUrl] = useState(true);
+    const [showDuplicateMessage, setShowDuplicateMessage] = useState(false);
 
-  render() {
+    useEffect(() => {
+        getAllURLs();
+    }, []);
+
+    const getAllURLs = () => {
+        fetch('https://localhost:44490/URLView/getAllURLs')
+            .then(response => response.json())
+            .then(data => setData(data))
+            .catch(error => console.error(error));
+    };
+
+    const handleInputChange = (event) => {
+        setUrl(event.target.value);
+        setIsValidUrl(validateUrl(event.target.value));
+    };
+
+    const validateUrl = (value) => {
+        const urlPattern = /^(https?:\/\/)?([\w-]+\.)+[\w-]+(\/[\w-./?%&=]*)?$/;
+        return urlPattern.test(value);
+    };
+
+    const addNewURL = async () => {
+        if (url.trim() !== '') {
+            if (isValidUrl) {
+                const newUrl = {
+                    id: 0,
+                    fullUrl: url,
+                    shortUrl: ''
+                };
+
+                try {
+                    const response = await fetch('https://localhost:44490/URLView/insertShortenedUrl', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(newUrl)
+                    });
+
+                    if (response.ok) {
+                        const isDuplicate = data.some(item => item.fullUrl === url);
+                        if (!isDuplicate) {
+                            await getAllURLs();
+                            setUrl('');
+                            setShowDuplicateMessage(false);
+                        } else {
+                            setShowDuplicateMessage(true);
+                        }
+                    } else {
+                        console.error('Failed to add URL');
+                    }
+                } catch (error) {
+                    console.error(error);
+                }
+            }
+        }
+    };
+
     return (
-      <div>
-        <h1>Hello, world!</h1>
-        <p>Welcome to your new single-page application, built with:</p>
-        <ul>
-          <li><a href='https://get.asp.net/'>ASP.NET Core</a> and <a href='https://msdn.microsoft.com/en-us/library/67ef8sbd.aspx'>C#</a> for cross-platform server-side code</li>
-          <li><a href='https://facebook.github.io/react/'>React</a> for client-side code</li>
-          <li><a href='http://getbootstrap.com/'>Bootstrap</a> for layout and styling</li>
-        </ul>
-        <p>To help you get started, we have also set up:</p>
-        <ul>
-          <li><strong>Client-side navigation</strong>. For example, click <em>Counter</em> then <em>Back</em> to return here.</li>
-          <li><strong>Development server integration</strong>. In development mode, the development server from <code>create-react-app</code> runs in the background automatically, so your client-side resources are dynamically built on demand and the page refreshes when you modify any file.</li>
-          <li><strong>Efficient production builds</strong>. In production mode, development-time features are disabled, and your <code>dotnet publish</code> configuration produces minified, efficiently bundled JavaScript files.</li>
-        </ul>
-        <p>The <code>ClientApp</code> subdirectory is a standard React application based on the <code>create-react-app</code> template. If you open a command prompt in that directory, you can run <code>npm</code> commands such as <code>npm test</code> or <code>npm install</code>.</p>
-      </div>
+        <div>
+            <h1>Data Table</h1>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Full URL</th>
+                        <th>Short URL</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {data.map(item => (
+                        <tr key={item.id}>
+                            <td>{item.fullUrl}</td>
+                            <td>https://localhost:44490/URLView/{item.shortUrl}</td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+
+            <h1>Insert URL</h1>
+            <input
+                type="text"
+                value={url}
+                onChange={handleInputChange}
+            />
+            {!isValidUrl && <p>Please enter a valid URL</p>}
+            {showDuplicateMessage && <p>This URL already exists in the table</p>}
+            <button onClick={addNewURL}>Add</button>
+        </div>
     );
-  }
 }
